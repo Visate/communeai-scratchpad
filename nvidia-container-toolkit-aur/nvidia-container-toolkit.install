@@ -1,0 +1,8 @@
+post_install() {
+    echo "Patching '/etc/docker/daemon.json' to include the nvidia-container-runtime"
+    /usr/bin/nvidia-ctk runtime configure --runtime=docker
+}
+
+post_remove() {
+    echo "IMPORTANT: manually remove the nvidia-container-runtime from '/etc/docker/daemon.json'"
+}

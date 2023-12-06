@@ -1,0 +1,47 @@
+pkgname=nvidia-container-toolkit
+pkgver=1.14.3
+pkgrel=1
+pkgdesc='NVIDIA container runtime toolkit'
+arch=('x86_64')
+url='https://github.com/NVIDIA/nvidia-container-toolkit'
+license=('Apache')
+
+makedepends=('go')
+depends=('libnvidia-container>=1.14.0')
+options=(!lto)
+backup=('etc/nvidia-container-runtime/config.toml')
+
+install="nvidia-container-toolkit.install"
+source=("${pkgname}-${pkgver}-${pkgrel}.tar.gz"::"${url}/archive/v${pkgver}.tar.gz"
+        'go-nvml-79.patch')
+sha256sums=('a8dbb6a8d45fe8cb2ecbb7b5d49c332e0e7270e8988e57d2a8587ab1e004f6dd'
+            '24182b216338472867bf0d597b9318281998b8f352e612c997913fa7a829f32b')
+
+build() {
+    cd "${pkgname}-${pkgver}"
+
+    # Patch go-nvml to work with go 1.21. Otherwise it will segfault during docker run.
+    # https://github.com/NVIDIA/go-nvml/pull/79
+    # https://github.com/NVIDIA/go-nvml/issues/36
+    patch -d "vendor/github.com/NVIDIA/go-nvml" -p1 < "${srcdir}/go-nvml-79.patch"
+
+    make cmds
+}
+
+package() {
+    cd "${pkgname}-${pkgver}"
+
+    # Install binaries.
+    install -D -m755 nvidia-container-runtime "${pkgdir}/usr/bin/nvidia-container-runtime"
+    install -D -m755 nvidia-container-runtime.cdi "${pkgdir}/usr/bin/nvidia-container-runtime.cdi"
+    install -D -m755 nvidia-container-runtime-hook "${pkgdir}/usr/bin/nvidia-container-runtime-hook"
+    install -D -m755 nvidia-container-runtime.legacy "${pkgdir}/usr/bin/nvidia-container-runtime.legacy"
+    install -D -m755 nvidia-ctk "${pkgdir}/usr/bin/nvidia-ctk"
+
+    # Symlink hook.
+    ln -sf "nvidia-container-runtime-hook" "${pkgdir}/usr/bin/nvidia-container-toolkit"
+
+    # Create config.
+    mkdir -p "${pkgdir}/etc/nvidia-container-runtime"
+    ./nvidia-ctk --quiet config --config-file="${pkgdir}/etc/nvidia-container-runtime/config.toml" --in-place
+}
