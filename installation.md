@@ -1,6 +1,6 @@
 ## Install Commune
 
-Based on my experience on EndeavourOS with [Docker](https://www.docker.com/get-started) already installed
+Based on my experience on EndeavourOS with [Docker](https://wiki.archlinux.org/title/docker) already installed
 
 
 - Clone commune repository
@@ -37,12 +37,13 @@ root@machine$~: c root_key
 
 ### Installing Commune Locally with Subspace
 
-- Add `export PATH="$HOME/.cargo/bin:$PATH"` to your shell config
+- I am using [pipenv](https://pipenv.pypa.io/en/latest/) to manage my python environment. You can replicate the same thing using regular virtualenvs, I just like using pipenv.
+- Add `export PATH="$HOME/.cargo/bin:$PATH"` to your shell config (**NOTE:** Might not be necessary, rustup script automatically sources its environment into your shell if it's able to)
 - Install _most_ Python deps to a pipenv (I saved at ~/repos/communeai/). Alternatively create your own venv then replace `pipenv` with `pip`.
 ```sh
 $ pipenv install click numpy protobuf==3.20 streamlit
 ```
-- Once the pipenv is created, enter it with `pipenv shell`, then go to the commune repo and install it. It will also install the rest of the dependancies.
+- Once the pipenv is created, enter it with `pipenv shell`, then go to the commune repo and install it. It will also install the rest of the dependencies.
 ```sh
 $ cd commune  # git repo for commune
 $ pip install -e ./
@@ -63,10 +64,21 @@ $ c modules
 ```sh
 $ c root_key
 ```
-- Start the node
+- Start the local node
 ```sh
 $ c start_local_node
 $ c s n
 ```
 - Set up something to run, using openrouter as example
-
+```sh
+$ c model.openrouter add_api_key yourkeyhere
+$ # Automatically start n instances and register with the network (min 100 stake each)
+$ c model.openrouter regfleet tag=yourtag n=10 api_key=sk-xxx
+```
+Useful commands: [Most Used Commands In Commune](https://mirror.xyz/macrodrigues.eth/53BqW7N1YvDtfFhqvDpvgp9ObDr9HafMB2giy2USDwE)
+- Find your public ip
+```sh
+$ curl -4 canihazip.com  # ipv4
+$ curl -6 canihazip.com  # ipv6
+```
+- Had to convert some $USDT to $COM to get started, any other ways from fresh?
