@@ -56,6 +56,11 @@ $ rustup override set nightly-2023-01-01
 $ rustup target add wasm32-unknown-unknown
 ```
 - **NOTE** If you came here from Docker setup, you will need to chown your `.commune` and `.bittensor` folders in your root directory back to your user (they will be root)
+```sh
+$ # Replace visate with your system username ($ whoami)
+$ sudo chown -R visate:visate ~/.commune
+$ sudo chown -R visate:visate ~/.bittensor
+```
 - Check commune is working
 ```sh
 $ c modules
@@ -80,5 +85,9 @@ Useful commands: [Most Used Commands In Commune](https://mirror.xyz/macrodrigues
 ```sh
 $ curl -4 canihazip.com  # ipv4
 $ curl -6 canihazip.com  # ipv6
+```
+- Assign your public ip to the address to properly serve on the network
+```sh
+$ c update_module module module::tag address=public.ip.address
 ```
 - Had to convert some $USDT to $COM to get started, any other ways from fresh?
